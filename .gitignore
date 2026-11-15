@@ -1,0 +1,3 @@
+# Gradio run-time cache and Python bytecode
+.gradio/
+__pycache__/
