@@ -35,9 +35,6 @@ def web():
     import sys
 
     sys.path.insert(0, "/root")
-    from fastapi import FastAPI
-    from gradio.routes import mount_gradio_app
-
     import pneumodetect_app
 
-    return mount_gradio_app(app=FastAPI(), blocks=pneumodetect_app.demo, path="/", allowed_paths=["/assets"])
+    return pneumodetect_app.create_app()          # Gradio UI (always in English) mounted on a FastAPI app
