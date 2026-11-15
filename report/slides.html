@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pneumodetect — presentation</title>
+<style>
+  @page { size: 13.333in 7.5in; margin: 0; }
+  :root { --ink: #0f172a; --muted: #475569; --line: #e2e8f0; --indigo: #4338ca; --sky: #0ea5e9; --red: #ef4444; --green: #10b981; --amber: #f59e0b; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: "Segoe UI", "Inter", Arial, sans-serif; color: var(--ink); }
+  .slide { width: 13.333in; height: 7.5in; padding: 0.55in 0.75in 0.5in; position: relative; overflow: hidden;
+           break-after: page; display: flex; flex-direction: column; }
+  .slide:last-child { break-after: auto; }
+  .kicker { font-size: 13pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--indigo); }
+  h2 { font-size: 30pt; margin: 4px 0 18px; letter-spacing: -0.01em; }
+  .bar { position: absolute; left: 0; top: 0; height: 0.12in; width: 100%; background: linear-gradient(90deg, #312e81, #4338ca 45%, #0ea5e9); }
+  .foot { position: absolute; bottom: 0.25in; left: 0.75in; right: 0.75in; display: flex; justify-content: space-between;
+          font-size: 10pt; color: #94a3b8; }
+  ul { margin: 0; padding-left: 1.1em; } li { font-size: 17pt; line-height: 1.45; margin: 5px 0; }
+  li b { color: var(--indigo); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45in; flex: 1; min-height: 0; }
+  .cols.wide-right { grid-template-columns: 0.9fr 1.3fr; }
+  .cols.wide-left { grid-template-columns: 1.35fr 0.85fr; }
+  .card { border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; background: #f8fafc; }
+  .card h3 { margin: 0 0 8px; font-size: 16pt; color: var(--indigo); }
+  .card p { margin: 0; font-size: 14pt; line-height: 1.45; color: var(--muted); }
+  img.fig { max-width: 100%; max-height: 100%; object-fit: contain; display: block; margin: 0 auto; }
+  .figbox { display: flex; align-items: center; justify-content: center; min-height: 0; flex: 1; }
+  .caption { font-size: 11pt; color: var(--muted); text-align: center; margin-top: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5pt; }
+  th, td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { background: #eef2ff; color: #312e81; font-weight: 700; }
+  tr.hl td { background: #ecfdf5; font-weight: 700; }
+  .yes { color: var(--green); font-weight: 700; } .no { color: var(--red); font-weight: 700; }
+  .big { font-size: 44pt; font-weight: 800; color: var(--indigo); line-height: 1; }
+  .stat { text-align: center; } .stat .lbl { font-size: 12.5pt; color: var(--muted); margin-top: 6px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3in; margin: 6px 0 22px; }
+  /* title slide */
+  .title { background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 48%, #0ea5e9 100%); color: #fff; justify-content: center; }
+  .title h1 { font-size: 54pt; margin: 0; letter-spacing: -0.02em; }
+  .title .sub { font-size: 22pt; opacity: .92; margin: 10px 0 34px; max-width: 10in; }
+  .title .meta { font-size: 16pt; line-height: 1.6; opacity: .95; }
+  .title .chip { display: inline-block; border: 1px solid rgba(255,255,255,.4); background: rgba(255,255,255,.12);
+                 border-radius: 999px; padding: 5px 14px; font-size: 13pt; margin: 0 8px 8px 0; }
+  /* flow diagrams */
+  .flow { display: flex; align-items: stretch; gap: 10px; margin: 6px 0 16px; }
+  .flow .node { flex: 1; border-radius: 12px; padding: 12px 12px; background: #eef2ff; border: 1px solid #c7d2fe;
+                font-size: 12.5pt; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+  .flow .node b { display: block; font-size: 13.5pt; color: #312e81; margin-bottom: 3px; }
+  .flow .arrow { align-self: center; font-size: 20pt; color: #94a3b8; }
+  .flow .node.alt { background: #e0f2fe; border-color: #bae6fd; } .flow .node.alt b { color: #075985; }
+  .flow .node.out { background: #ecfdf5; border-color: #a7f3d0; } .flow .node.out b { color: #065f46; }
+  .note { font-size: 13pt; color: var(--muted); margin-top: auto; }
+  a { color: var(--indigo); }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="slide title">
+  <div class="kicker" style="color:#c7d2fe">Machine Learning Algorithms · Final Project</div>
+  <h1>Pneumodetect</h1>
+  <div class="sub">Pneumonia detection from chest X-ray images with transfer learning and Grad-CAM explanations</div>
+  <div><span class="chip">ResNet50</span><span class="chip">~108k X-rays</span><span class="chip">Bacterial / viral</span><span class="chip">Grad-CAM</span><span class="chip">Web app</span></div>
+  <div class="meta" style="margin-top:30px">Asulkhan Aidarkhanov · Ravil Serikuly — BDA-2401<br>Astana IT University · Instructor: Assiya Karatay · 2026</div>
+</section>
+
+<!-- 2 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Introduction</div><h2>Why pneumonia detection?</h2>
+  <div class="cols wide-left">
+    <ul>
+      <li>Pneumonia is the <b>leading infectious killer of children under five</b> (WHO, 2022)</li>
+      <li>A chest X-ray confirms it — but <b>radiologists are scarce</b> in many regions</li>
+      <li>CNNs already reach expert level on chest X-ray tasks (Kermany et al., 2018; Rajpurkar et al., 2017)</li>
+      <li>Goal: a fast, reproducible <b>second opinion</b> that sorts X-rays so likely pneumonias are read first</li>
+      <li style="color:#64748b">Course project — <b>not a medical device</b>, not a diagnosis</li>
+    </ul>
+    <div class="card" style="align-self:center">
+      <h3>Research question</h3>
+      <p>How much does a <b>fine-tuned CNN</b> improve pneumonia detection over <b>classical ML</b> on the same data — and how well does it generalise to <b>unseen patients and hospitals</b>?</p>
+    </div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>2</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Objectives</div><h2>What we set out to build</h2>
+  <div class="cols">
+    <div class="card"><h3>Definite (D1–D11)</h3><p>
+      Load data via API · 224×224 preprocessing · patient-level splits without leakage · GPU check ·
+      Normal vs Pneumonia with sigmoid output · ResNet50 transfer learning in two stages · augmentation ·
+      class weights · callbacks · full evaluation · <b>classical baseline comparison</b></p></div>
+    <div class="card"><h3>Nice-to-do (N1–N8)</h3><p>
+      <b>N1</b> bacterial vs viral (3 classes) ✓ · <b>N2</b> Grad-CAM ✓ · <b>N3</b> web interface ✓ ·
+      <b>N6</b> threshold tuned for 95% sensitivity ✓ · <b>N7</b> “low confidence” flag 0.40–0.60 ✓ ·
+      <b>N8</b> saved model reused without retraining ✓ · N4 hyper-parameter search, N5 backbone comparison — future work</p></div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>3</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Data</div><h2>Three public sources, ~108,000 X-rays</h2>
+  <table>
+    <thead><tr><th>Source</th><th>Patients</th><th>What we use</th><th>Images</th></tr></thead>
+    <tbody>
+      <tr><td>NIH ChestX-ray14 (Wang et al., 2017)</td><td>Adults</td><td>Images + NLP-mined labels + official test list</td><td>102,006</td></tr>
+      <tr><td>RSNA Pneumonia Challenge (Shih et al., 2019)</td><td>Adults</td><td>Radiologist labels &amp; boxes for 26,684 NIH images</td><td>labels</td></tr>
+      <tr><td>Kermany et al. (2018)</td><td>Children 1–5 y</td><td>Normal / bacterial / viral</td><td>5,856</td></tr>
+    </tbody>
+  </table>
+  <div class="cols" style="margin-top:22px">
+    <ul>
+      <li>Radiologist label <b>wins over NLP label</b> whenever it exists</li>
+      <li>10,114 unverified “Consolidation / Infiltration” images <b>dropped</b></li>
+      <li>Everything loaded through the <b>Kaggle API</b> — nothing stored by hand</li>
+    </ul>
+    <ul>
+      <li>Splits <b>by patient</b> (StratifiedGroupKFold) — no person in two splits</li>
+      <li>MD5 hashing removed <b>4 exact duplicates</b> from evaluation splits</li>
+      <li>Pneumonia = <b>9% of training images</b> → accuracy alone misleads</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>4</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Data</div><h2>Splits and label sources</h2>
+  <div class="figbox"><img class="fig" src="figures/nb_c21_01.png" alt="splits"></div>
+  <div class="caption">Train 72,676 · Validation 12,135 · Test: NIH 22,423 (adults) and Kermany 624 (children) — test sets never used for training or tuning</div>
+  <div class="foot"><span>Pneumodetect</span><span>5</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Methodology</div><h2>Data pipeline</h2>
+  <div class="flow">
+    <div class="node"><b>Kaggle API</b>NIH · RSNA labels · Kermany</div><div class="arrow">→</div>
+    <div class="node"><b>Labels</b>RSNA &gt; NIH, drop unverified</div><div class="arrow">→</div>
+    <div class="node"><b>Patient split</b>train / val / test, no leakage</div><div class="arrow">→</div>
+    <div class="node alt"><b>Preprocess once</b>grayscale, 224×224, uint8 cache (5.4 GB)</div><div class="arrow">→</div>
+    <div class="node alt"><b>tf.data</b>3 channels, prefetch, class weights</div><div class="arrow">→</div>
+    <div class="node out"><b>Models</b>baselines · CNN · 3-class</div>
+  </div>
+  <div class="cols" style="margin-top:6px">
+    <div class="figbox"><img class="fig" src="figures/nb_c22_02.png" alt="examples" style="max-height:3.3in"></div>
+    <div class="figbox"><img class="fig" src="figures/nb_c26_04.png" alt="augmentation" style="max-height:3.3in"></div>
+  </div>
+  <div class="caption">Left: random training X-rays after preprocessing. Right: augmentation — rotation ±10°, shifts/zoom 10%, brightness ±10%, no vertical flips</div>
+  <div class="foot"><span>Pneumodetect</span><span>6</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Methodology</div><h2>Models</h2>
+  <div class="card" style="margin-bottom:16px"><h3>Classical baselines (scikit-learn)</h3>
+    <p>Pixels 56×56 → standardise → PCA 256 (97.1% variance) &nbsp;|&nbsp; frozen ImageNet ResNet50 → 2,048 features &nbsp;→&nbsp;
+       <b>logistic regression</b> and <b>linear SVM</b>, balanced class weights, C chosen on validation ROC-AUC</p></div>
+  <div class="flow">
+    <div class="node"><b>X-ray</b>224×224×3</div><div class="arrow">→</div>
+    <div class="node alt"><b>Augmentation</b>training only</div><div class="arrow">→</div>
+    <div class="node alt"><b>ImageNet mean</b>subtraction layer</div><div class="arrow">→</div>
+    <div class="node"><b>ResNet50</b>ImageNet weights<br>7×7×2048</div><div class="arrow">→</div>
+    <div class="node"><b>Global avg pool</b>+ dropout 0.3</div><div class="arrow">→</div>
+    <div class="node out"><b>Dense (sigmoid)</b>P(pneumonia)</div>
+  </div>
+  <div class="cols">
+    <div class="card"><h3>Two-stage training</h3><p>Stage 1: head only (2,049 weights), Adam 1e-3, ≤3 epochs<br>Stage 2: + conv5 block (15.0M weights, BatchNorm frozen), Adam 1e-5, ≤7 epochs<br>BCE with class weights 0.55 / 5.53 · batch 32 · mixed precision · Kaggle T4 GPU</p></div>
+    <div class="card"><h3>Callbacks &amp; extensions</h3><p>ModelCheckpoint (best val AUC) · EarlyStopping (patience 3) · ReduceLROnPlateau<br>Threshold for 95% val. sensitivity · 3-class softmax head on the X-ray-adapted backbone · Grad-CAM on the class logit</p></div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>7</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Results</div><h2>Fine-tuned CNN vs classical baselines</h2>
+  <table>
+    <thead><tr><th>Model</th><th>Kermany Acc.</th><th>Sens.</th><th>Spec.</th><th>F1</th><th>ROC-AUC</th><th>NIH Acc.</th><th>NIH AUC</th></tr></thead>
+    <tbody>
+      <tr><td>Majority class</td><td>0.375</td><td>0.000</td><td>1.000</td><td>0.000</td><td>0.500</td><td>0.874</td><td>0.500</td></tr>
+      <tr><td>Pixels + LogReg</td><td>0.691</td><td>1.000</td><td>0.175</td><td>0.802</td><td>0.827</td><td>0.682</td><td>0.724</td></tr>
+      <tr><td>Pixels + Linear SVM</td><td>0.689</td><td>1.000</td><td>0.171</td><td>0.801</td><td>0.836</td><td>0.679</td><td>0.726</td></tr>
+      <tr><td>ResNet50 features + LogReg (best baseline)</td><td>0.740</td><td>1.000</td><td>0.308</td><td>0.828</td><td>0.916</td><td>0.671</td><td>0.783</td></tr>
+      <tr><td>ResNet50 features + Linear SVM</td><td>0.705</td><td>1.000</td><td>0.214</td><td>0.809</td><td>0.913</td><td>0.597</td><td>0.783</td></tr>
+      <tr><td>Fine-tuned ResNet50, t = 0.5</td><td>0.812</td><td>0.997</td><td>0.504</td><td>0.869</td><td>0.944</td><td>0.801</td><td>0.802</td></tr>
+      <tr class="hl"><td>Fine-tuned ResNet50, val-tuned t = 0.84</td><td>0.873</td><td>0.977</td><td>0.701</td><td>0.906</td><td>0.944</td><td>—</td><td>0.802</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Majority class gets 87% accuracy on NIH while finding <b>zero</b> pneumonias → we report sensitivity, specificity, F1 and ROC-AUC. Fine-tuning beats every baseline on both test sets.</div>
+  <div class="foot"><span>Pneumodetect</span><span>8</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Results</div><h2>ROC curves and confusion matrices</h2>
+  <div class="cols">
+    <div class="figbox"><img class="fig" src="figures/nb_c47_08.png" alt="roc"></div>
+    <div class="figbox"><img class="fig" src="figures/nb_c47_09.png" alt="cm"></div>
+  </div>
+  <div class="caption">Kermany test: 381 of 390 pneumonias found, 164 of 234 healthy children cleared · NIH test: tuned threshold gives 98% sensitivity, t = 0.5 is the useful operating point (accuracy 0.801)</div>
+  <div class="foot"><span>Pneumodetect</span><span>9</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Results</div><h2>Training converged — no severe overfitting</h2>
+  <div class="figbox" style="flex:0 0 auto"><img class="fig" src="figures/nb_c44_07.png" alt="learning curves" style="max-height:3.4in"></div>
+  <div class="cols" style="margin-top:14px">
+    <ul>
+      <li>Head fits in <b>1 epoch</b>; fine-tuning lifts val AUC <b>0.917 → 0.937</b></li>
+      <li><b>EarlyStopping</b> ended stage 2 after 5 of 7 epochs — budget was not the limit</li>
+    </ul>
+    <ul>
+      <li>Second independent run: accuracy 0.881, AUC 0.950 → <b>±1 pp</b> run-to-run variation</li>
+      <li>Validation → test accuracy drop: <b>0.090</b> (target ≤ 0.10)</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Results</div><h2>Success criteria from the proposal</h2>
+  <div class="cols wide-left">
+    <table>
+      <thead><tr><th>Criterion (Kermany test)</th><th>Target</th><th>Result</th><th>Met</th></tr></thead>
+      <tbody>
+        <tr><td>Accuracy</td><td>≥ 0.88</td><td>0.873</td><td class="no">✗</td></tr>
+        <tr><td>Sensitivity</td><td>≥ 0.95</td><td>0.977</td><td class="yes">✓</td></tr>
+        <tr><td>Specificity</td><td>≥ 0.80</td><td>0.701</td><td class="no">✗</td></tr>
+        <tr><td>F1</td><td>≥ 0.90</td><td>0.906</td><td class="yes">✓</td></tr>
+        <tr><td>ROC-AUC</td><td>≥ 0.95</td><td>0.944</td><td class="no">✗</td></tr>
+        <tr><td>Accuracy gain vs baseline (Kermany / NIH)</td><td>≥ +5 pp</td><td>+7.2 / +13.1</td><td class="yes">✓ ✓</td></tr>
+        <tr><td>F1 gain vs baseline (Kermany / NIH)</td><td>≥ +5 pp</td><td>+4.1 / +3.8</td><td class="no">✗ ✗</td></tr>
+        <tr><td>Val → test accuracy drop</td><td>≤ 0.10</td><td>0.090</td><td class="yes">✓</td></tr>
+        <tr><td>Prediction time</td><td>&lt; 2 s</td><td>0.27 s</td><td class="yes">✓</td></tr>
+      </tbody>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div class="stat"><div class="big">6 / 11</div><div class="lbl">binary-model targets met</div></div>
+      <div class="stat"><div class="big">2 / 2</div><div class="lbl">3-class targets met</div></div>
+      <div class="card"><p>Main miss: <b>specificity on healthy children</b> — explained on the Discussion slide</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>11</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Results</div><h2>Bacterial vs viral pneumonia (N1)</h2>
+  <div class="cols wide-right">
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center">
+      <div class="stats" style="grid-template-columns:1fr 1fr;margin:0">
+        <div class="stat"><div class="big">0.812</div><div class="lbl">macro-F1 (target ≥ 0.75)</div></div>
+        <div class="stat"><div class="big">0.757</div><div class="lbl">viral recall (target ≥ 0.60)</div></div>
+      </div>
+      <table>
+        <thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
+        <tbody>
+          <tr><td>Normal</td><td>0.956</td><td>0.739</td><td>0.834</td></tr>
+          <tr><td>Bacterial</td><td>0.819</td><td>0.950</td><td>0.880</td></tr>
+          <tr><td>Viral</td><td>0.691</td><td>0.757</td><td>0.723</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="figbox"><img class="fig" src="figures/nb_c58_13.png" alt="3-class cm"></div>
+  </div>
+  <div class="note">Viral pneumonia gives diffuse, subtle changes between a normal chest and lobar bacterial consolidation — the most confused class pair.</div>
+  <div class="foot"><span>Pneumodetect</span><span>12</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Explainability</div><h2>Grad-CAM: where does the model look? (N2)</h2>
+  <div class="cols wide-left">
+    <div class="figbox"><img class="fig" src="figures/nb_c53_10.png" alt="gradcam"></div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center">
+      <div class="stat"><div class="big">58%</div><div class="lbl">map peak inside a radiologist’s box<br>(500 NIH test X-rays)</div></div>
+      <div class="stat"><div class="big" style="color:#94a3b8">13%</div><div class="lbl">expected by chance</div></div>
+      <div class="card"><p>Gradient of the class <b>logit</b>, not the probability — otherwise confident predictions (P = 1.00) give empty maps</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>13</span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Application</div><h2>Pneumodetect web app (N3, N7, N8)</h2>
+  <div class="cols wide-left">
+    <div class="figbox"><img class="fig" src="figures/demo_app.jpg" alt="app" style="border:1px solid #e2e8f0;border-radius:10px"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <ul>
+        <li>Upload an X-ray → <b>P(pneumonia)</b>, likely <b>type</b>, <b>Grad-CAM</b> overlay</li>
+        <li><b>Low-confidence</b> flag for 40–60%</li>
+        <li>Saved models, <b>no retraining</b>; ~1 s per X-ray on CPU</li>
+        <li>Gradio UI, deployed on Modal</li>
+      </ul>
+      <div class="card"><p><b>Live demo:</b><br><a href="https://keonmei--pneumodetect-web.us-east.modal.run">keonmei--pneumodetect-web.us-east.modal.run</a><br><b>Code:</b> <a href="https://github.com/KeonMei/pneumonia-detection-from-chest-x-ray-images">github.com/KeonMei/pneumonia-detection-from-chest-x-ray-images</a></p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>14</span></div>
+</section>
+
+<!-- 15 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Discussion</div><h2>What worked, what limits the model</h2>
+  <div class="cols">
+    <div class="card"><h3>Deep learning helps</h3><p>
+      Fine-tuning beats all four baselines on <b>both</b> test sets (AUC 0.944 vs 0.916 on children, 0.802 vs 0.783 on adults).
+      Baselines call most healthy children ill (specificity 0.17–0.31); the CNN clears <b>70%</b> of them.
+      NIH AUC 0.802 vs 0.768 reported for CheXNet (different label definition).</p></div>
+    <div class="card"><h3>Domain shift is the limit</h3><p>
+      <b>94%</b> of training images are adult NIH X-rays → least certain on healthy children (Zech et al., 2018).
+      Missed adult pneumonias: map sits on text markers / corners — shortcut learning.
+      NIH labels are noisy (Oakden-Rayner, 2020); Kermany normals split per image; small test set (1 image = 0.16 pp).</p></div>
+  </div>
+  <div class="figbox" style="flex:0 0 auto;margin-top:14px"><img class="fig" src="figures/nb_c54_11.png" alt="errors" style="max-height:1.75in"></div>
+  <div class="foot"><span>Pneumodetect</span><span>15</span></div>
+</section>
+
+<!-- 16 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">Conclusion</div><h2>Summary and future work</h2>
+  <div class="stats">
+    <div class="stat"><div class="big">0.977</div><div class="lbl">sensitivity (children)</div></div>
+    <div class="stat"><div class="big">0.944</div><div class="lbl">ROC-AUC (children)</div></div>
+    <div class="stat"><div class="big">0.812</div><div class="lbl">3-class macro-F1</div></div>
+    <div class="stat"><div class="big">4.5×</div><div class="lbl">Grad-CAM hits vs chance</div></div>
+  </div>
+  <div class="cols">
+    <ul>
+      <li>~108k X-rays from 3 sources, <b>leak-free patient splits</b></li>
+      <li>Fine-tuned ResNet50 <b>outperforms classical ML</b> on adults and children</li>
+      <li>Type prediction, explanations and a <b>working web app</b></li>
+    </ul>
+    <ul>
+      <li><b>Future:</b> domain-balanced sampling or a per-source head</li>
+      <li>Compare backbones (DenseNet121, EfficientNet), hyper-parameter search</li>
+      <li>Probability calibration, external test on another hospital</li>
+    </ul>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>16</span></div>
+</section>
+
+<!-- 17 -->
+<section class="slide"><div class="bar"></div>
+  <div class="kicker">References</div><h2>References</h2>
+  <div style="font-size:11.5pt;line-height:1.5;columns:2;column-gap:0.5in">
+    <p>Abadi, M., et al. (2016). TensorFlow: Large-scale machine learning on heterogeneous distributed systems. arXiv:1603.04467.</p>
+    <p>Abid, A., et al. (2019). Gradio: Hassle-free sharing and testing of ML models in the wild. arXiv:1906.02569.</p>
+    <p>Deng, J., et al. (2009). ImageNet: A large-scale hierarchical image database. CVPR, 248–255.</p>
+    <p>He, K., Zhang, X., Ren, S., &amp; Sun, J. (2016). Deep residual learning for image recognition. CVPR, 770–778.</p>
+    <p>Kermany, D. S., et al. (2018). Identifying medical diagnoses and treatable diseases by image-based deep learning. Cell, 172(5), 1122–1131.</p>
+    <p>Mooney, P. (2018). Chest X-ray images (pneumonia) [Data set]. Kaggle.</p>
+    <p>Oakden-Rayner, L. (2020). Exploring large-scale public medical image datasets. Academic Radiology, 27(1), 106–112.</p>
+    <p>Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. JMLR, 12, 2825–2830.</p>
+    <p>Rajpurkar, P., et al. (2017). CheXNet: Radiologist-level pneumonia detection on chest X-rays with deep learning. arXiv:1711.05225.</p>
+    <p>Selvaraju, R. R., et al. (2017). Grad-CAM: Visual explanations from deep networks via gradient-based localization. ICCV, 618–626.</p>
+    <p>Shih, G., et al. (2019). Augmenting the NIH chest radiograph dataset with expert annotations of possible pneumonia. Radiology: AI, 1(1), e180041.</p>
+    <p>Wang, X., et al. (2017). ChestX-ray8: Hospital-scale chest X-ray database and benchmarks. CVPR, 2097–2106.</p>
+    <p>World Health Organization. (2022). Pneumonia in children [Fact sheet].</p>
+    <p>Zech, J. R., et al. (2018). Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs. PLOS Medicine, 15(11), e1002683.</p>
+  </div>
+  <div class="foot"><span>Pneumodetect</span><span>17</span></div>
+</section>
+
+</body>
+</html>

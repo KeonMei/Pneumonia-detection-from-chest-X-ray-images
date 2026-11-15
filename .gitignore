@@ -1,3 +1,8 @@
 # Gradio run-time cache and Python bytecode
 .gradio/
 __pycache__/
+
+# Intermediate files of the report build (regenerated from report/*.html and the notebooks)
+report/build/
+report/slides.pdf
+report/paper.pdf
